@@ -17,6 +17,7 @@ const compactMenu = menu.filter(x => x.available !== false).map(x => ({
   nome: x.name,
   descrizione: x.desc,
   prezzo: x.price,
+  varianti: x.variants || [],
   allergeni: x.allergens || 'da verificare',
   vegano: !!x.vegan
 }));
@@ -27,7 +28,7 @@ app.post('/api/coppo', async (req, res) => {
   const history = Array.isArray(req.body?.history) ? req.body.history.slice(-8) : [];
   if (!message) return res.status(400).json({ error: 'EMPTY_MESSAGE' });
 
-  const instructions = `Sei “Coppo AI”, il cameriere digitale di Apericoppo, street food palermitano a Cinisi. Rispondi in italiano caldo, breve e naturale. Usa SOLO i prodotti presenti nel MENU fornito. Non inventare prodotti, prezzi, ingredienti, allergeni o disponibilità. Quando il cliente indica budget e persone, proponi una combinazione sensata che non superi il budget se possibile. Se chiede vegano, usa solo prodotti con vegano=true. Per allergie/intolleranze, non dichiarare mai un piatto sicuro: mostra solo gli allergeni registrati e invita a confermare con lo staff per contaminazioni. Se il cliente vuole prenotare, estrai persone, data e ora quando presenti. Puoi restituire product_ids per permettere al sito di aggiungere i piatti al carrello. Non usare markdown. MENU: ${JSON.stringify(compactMenu)}`;
+  const instructions = `Sei “Chiedi allo Chef”, il cameriere digitale di Apericoppo, street food palermitano a Cinisi. Rispondi in italiano caldo, breve e naturale. Usa SOLO i prodotti presenti nel MENU fornito. Non inventare prodotti, prezzi, ingredienti, allergeni o disponibilità. Quando il cliente indica budget e persone, proponi una combinazione sensata che non superi il budget se possibile. Se chiede vegano, usa solo prodotti con vegano=true. Per allergie/intolleranze, non dichiarare mai un piatto sicuro: mostra solo gli allergeni registrati e invita a confermare con lo staff per contaminazioni. Se il cliente vuole prenotare, estrai persone, data e ora quando presenti. Puoi restituire product_ids per permettere al sito di aggiungere i piatti al carrello. Non usare markdown. MENU: ${JSON.stringify(compactMenu)}`;
 
   const input = [
     ...history.map(x => ({ role: x.role === 'assistant' ? 'assistant' : 'user', content: String(x.content || '').slice(0, 800) })),
